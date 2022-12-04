@@ -21,6 +21,11 @@ namespace terraingen {
       SUCCESS
     };
 
+    // insertion and removal is O(1)
+    // random access is O(n)
+    // an iterator would go far faster...
+    // but we'd need it custom :(
+
     /**
      * @brief LRU cache impl
      * 
@@ -43,6 +48,21 @@ namespace terraingen {
 
       bool Has(const KeyType& key) {
         return (key_cache.Contains(key));
+      }
+
+      /**
+       * @brief ensure cache has capacity for specified items
+       * 
+       * @param new_capacity 
+       */
+      void Reserve(int new_capacity) {
+        if (capacity_ < new_capacity) {
+          capacity_ = new_capacity;
+        }
+      }
+
+      int Capacity() {
+        return capacity_;
       }
 
       // put, ignore result
@@ -78,7 +98,7 @@ namespace terraingen {
     private:
       HashList<KeyType> key_cache;
       std::unordered_map<KeyType, ValueType> value_cache;
-      const int capacity_;
+      int capacity_;
     };     
   }
 }

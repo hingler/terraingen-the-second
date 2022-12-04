@@ -13,23 +13,26 @@
 namespace terraingen {
   namespace terrain {
     // chunks shouldn't take responsibility for their own construction (it doesn't make sense)
-  
-    // wrapper for chunk data, managed by chunk gen
+    
     struct Chunk {
       Vertex* vertex_data;
       unsigned int* index_data;
 
+      size_t vertex_count;
+      size_t index_count;
+
       template <typename HeightMap>
-      static Chunk chunk_create(
+      static std::shared_ptr<Chunk> chunk_create(
         const VertexGenerator<HeightMap>& vert_generator,
         size_t offset_x,
         size_t offset_y,
-        size_t step,
+        unsigned int offset_index,
         size_t tree_res,
         size_t chunk_res,
         const glm::vec3& terrain_offset,
         const lod::lod_node* lod) 
       {
+        size_t step = tree_res / chunk_res;
         Vertex* vert_data = new Vertex[chunk_res * chunk_res];
         unsigned int* ind_data = new unsigned int[(chunk_res - 1) * (chunk_res - 1) * 6];
         for (int y = 0; y <= chunk_res; y++) {
@@ -41,7 +44,7 @@ namespace terraingen {
         size_t index_offset = 0;
         for (int y = 0; y < chunk_res; y++) {
           for (int x = 0; x < chunk_res; x++) {
-            size_t index_init = (y * chunk_res + x);
+            unsigned int index_init = (y * chunk_res + x) + offset_index;
             ind_data[index_offset++] = index_init;
             ind_data[index_offset++] = index_init + 1;
             ind_data[index_offset++] = index_init + chunk_res;
@@ -51,9 +54,13 @@ namespace terraingen {
           }
         }
 
-        Chunk res;
-        res.vertex_data = vert_data;
-        res.index_data = ind_data;
+        auto res = std::make_shared<Chunk>();
+        res->vertex_data = vert_data;
+        res->index_data = ind_data;
+        res->vertex_count = (chunk_res + 1) * (chunk_res + 1);
+        res->index_count = chunk_res * chunk_res * 6;
+
+        return res;
       }
 
       // dtor

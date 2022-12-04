@@ -9,7 +9,15 @@ namespace terraingen {
       size_t x;
       size_t y;
       size_t size;
+
+      bool operator==(const ChunkIdentifier& rhs) {
+        return (rhs.x == x && rhs.y == y && rhs.size == size);
+      }
     };
+
+    bool operator==(const ChunkIdentifier& lhs, const ChunkIdentifier& rhs) {
+      return lhs == rhs;
+    }
   }
 }
 
@@ -20,6 +28,8 @@ namespace std {
       // this is fine for now i think
       return ((identifier.x << 24) | identifier.y) * identifier.size;
     }
+
+    // need equality check :3
   };
 }
 
