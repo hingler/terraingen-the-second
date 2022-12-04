@@ -20,7 +20,7 @@ namespace terraingen {
     }
 
     template <typename T>
-    struct height_map : decltype(impl_::height_map_impl<T>(0)) {};
+    struct height_map : decltype(impl_::height_map_impl::test<T>(0)) {};
   }
 }
 
