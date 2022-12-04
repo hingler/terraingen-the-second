@@ -99,6 +99,33 @@ TEST(HashListTest, PushFirstElementOntoLast) {
   ASSERT_EQ(output, 1);
 }
 
+TEST(HashListTest, VerifyIterator) {
+  HashList<int> test;
+  for (int i = 0; i < 512; i++) {
+    test.PushBack(i);
+  }
+
+  int cur = 0;
+  for (auto itr = test.begin(); itr != test.end(); itr++) {
+    ASSERT_EQ(*itr, cur++);
+  }
+
+  ASSERT_EQ(cur, 512);
+
+  auto itr = test.begin();
+  for (int i = 0; i < 511; i++) {
+    ++itr;
+  }
+
+  cur = 511;
+  while (itr != test.end()) {
+    ASSERT_EQ(*itr, cur--);
+    --itr;
+  }
+
+  ASSERT_EQ(cur, -1);
+}
+
 TEST(HashListTest, StressTest) {
   HashList<int> list;
 

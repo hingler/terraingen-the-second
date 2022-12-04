@@ -85,7 +85,7 @@ namespace terraingen {
       }
 
       int GetChunkCount_recurse(const lod::lod_node* node) {
-        if (nodes == nullptr) {
+        if (node == nullptr) {
           return 0;
         }
 
@@ -97,8 +97,6 @@ namespace terraingen {
         chunk_count += GetChunkCount_recurse(node->br);
         return chunk_count;
       }
-
-
 
       util::LRUCache<ChunkIdentifier, std::shared_ptr<Chunk>> chunk_data_;
       // our chunks will be at the front of the 

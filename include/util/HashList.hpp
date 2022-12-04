@@ -3,17 +3,11 @@
 
 #include <unordered_map>
 
+#include "util/impl/ListNode.hpp"
+#include "util/impl/HashListIterator.hpp"
+
 namespace terraingen {
   namespace util {
-
-    namespace impl_ {
-      template <typename KeyType>
-      struct ListNode {
-        ListNode<KeyType>* prev;
-        ListNode<KeyType>* next;
-        KeyType value;
-      };
-    }
 
     template <typename KeyType>
     class HashList {
@@ -74,18 +68,22 @@ namespace terraingen {
        */
       size_t Size();
 
+      impl::HashListIterator<KeyType> begin();
+
+      impl::HashListIterator<KeyType> end();
+
       ~HashList();
     private:
       // store in disorganized heap space?
       // eh, for now
       // we can come up with something better, late
       
-      impl_::ListNode<KeyType>* CreateListNode(const KeyType& key);
-      void DeleteNode(impl_::ListNode<KeyType>* node);
+      impl::ListNode<KeyType>* CreateListNode(const KeyType& key);
+      void DeleteNode(impl::ListNode<KeyType>* node);
       
-      impl_::ListNode<KeyType>* front;
-      impl_::ListNode<KeyType>* back;
-      std::unordered_map<KeyType, impl_::ListNode<KeyType>*> node_cache;
+      impl::ListNode<KeyType>* front;
+      impl::ListNode<KeyType>* back;
+      std::unordered_map<KeyType, impl::ListNode<KeyType>*> node_cache;
       size_t mem_watch;
     };
 
@@ -96,8 +94,8 @@ namespace terraingen {
     size_t HashList<KeyType>::Size() { return node_cache.size(); }
 
     template <typename KeyType>
-    impl_::ListNode<KeyType>* HashList<KeyType>::CreateListNode(const KeyType& key) {
-      impl_::ListNode<KeyType>* node = new impl_::ListNode<KeyType>();
+    impl::ListNode<KeyType>* HashList<KeyType>::CreateListNode(const KeyType& key) {
+      impl::ListNode<KeyType>* node = new impl::ListNode<KeyType>();
       mem_watch++;
       node->value = key;
       node_cache.insert(std::make_pair(key, node));
@@ -106,7 +104,7 @@ namespace terraingen {
     
     template <typename KeyType>
     void HashList<KeyType>::PushFront(const KeyType& key) {
-      impl_::ListNode<KeyType>* node;
+      impl::ListNode<KeyType>* node;
       if (this->Contains(key)) {
         node = node_cache.at(key);
         if (node == front) {
@@ -137,7 +135,7 @@ namespace terraingen {
 
     template <typename KeyType>
     void HashList<KeyType>::PushBack(const KeyType& key) {
-      impl_::ListNode<KeyType>* node;
+      impl::ListNode<KeyType>* node;
       if (this->Contains(key)) {
         node = node_cache.at(key);
         if (node == back) {
@@ -171,7 +169,7 @@ namespace terraingen {
         return false;
       }
 
-      impl_::ListNode<KeyType>* node = front;
+      impl::ListNode<KeyType>* node = front;
       front = front->next;
       if (node == back) {
         back = nullptr;
@@ -194,7 +192,7 @@ namespace terraingen {
         return false;
       }
 
-      impl_::ListNode<KeyType>* node = back;
+      impl::ListNode<KeyType>* node = back;
       back = node->prev;
       if (node == front) {
         front = nullptr;
@@ -223,7 +221,7 @@ namespace terraingen {
         return false;
       }
 
-      impl_::ListNode<KeyType>* node = node_cache.at(key);
+      impl::ListNode<KeyType>* node = node_cache.at(key);
 
       if (node == back) {
         return PopBack(nullptr);
@@ -245,7 +243,7 @@ namespace terraingen {
     }
 
     template <typename KeyType>
-    void HashList<KeyType>::DeleteNode(impl_::ListNode<KeyType>* node) {
+    void HashList<KeyType>::DeleteNode(impl::ListNode<KeyType>* node) {
       delete node;
       mem_watch--;
     }
@@ -259,6 +257,16 @@ namespace terraingen {
 
       // ensure everything is freed!
       assert(mem_watch == 0);
+    }
+
+    template <typename KeyType>
+    impl::HashListIterator<KeyType> HashList<KeyType>::begin() {
+      return impl::HashListIterator<KeyType>(front);
+    }
+
+    template <typename KeyType>
+    impl::HashListIterator<KeyType> HashList<KeyType>::end() {
+      return impl::HashListIterator<KeyType>(nullptr);
     }
   }
 }

@@ -5,7 +5,6 @@
 #include <unordered_map>
 
 #include "util/HashList.hpp"
-#include "terrain/ChunkGenerator.hpp"
 
 namespace terraingen {
   namespace util {
