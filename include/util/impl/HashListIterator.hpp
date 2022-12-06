@@ -82,11 +82,11 @@ namespace terraingen {
           return &node->value;
         }
 
-        bool operator==(const HashListIterator<ValueType>& other) {
+        bool operator==(const HashListIterator<ValueType>& other) const {
           return node == other.node;
         }
 
-        bool operator!=(const HashListIterator<ValueType>& other) {
+        bool operator!=(const HashListIterator<ValueType>& other) const {
           return !(node == other.node);
         }
       private:

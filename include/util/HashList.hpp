@@ -194,6 +194,10 @@ namespace terraingen {
 
       impl::ListNode<KeyType>* node = back;
       back = node->prev;
+      if (back != nullptr) {
+        back->next = nullptr;
+      }
+
       if (node == front) {
         front = nullptr;
       }

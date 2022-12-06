@@ -118,12 +118,12 @@ TEST(HashListTest, VerifyIterator) {
   }
 
   cur = 511;
-  while (itr != test.end()) {
+  do {
     ASSERT_EQ(*itr, cur--);
     --itr;
-  }
+  } while (itr != test.begin());
 
-  ASSERT_EQ(cur, -1);
+  ASSERT_EQ(cur, 0);
 }
 
 TEST(HashListTest, StressTest) {
@@ -133,7 +133,7 @@ TEST(HashListTest, StressTest) {
   // (2 << 26) - 1 -> something like 65 million push/pop pairs
   // about 4 seconds (with assertions)
   // 30 mil modifications per second (sufficient for this)
-  for (int size = 1; size < (1 << 25); size <<= 1) {
+  for (int size = 1; size < (1 << 18); size <<= 1) {
     for (int i = 0; i < size; i++) {
       list.PushFront(i);
     }
