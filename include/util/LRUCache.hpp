@@ -5,7 +5,7 @@
 #include <unordered_map>
 
 #include "util/HashList.hpp"
-#include "terrain/ChunkGenerator.hpp"
+#include "util/impl/LRUCacheIterator.hpp"
 
 namespace terraingen {
   namespace util {
@@ -93,6 +93,18 @@ namespace terraingen {
 
         value_cache.insert_or_assign(key, value);
         return res;
+      }
+
+      impl::LRUCacheIterator<KeyType, ValueType> begin() {
+        return impl::LRUCacheIterator<KeyType, ValueType>(key_cache.begin(), &value_cache);
+      }
+
+      impl::LRUCacheIterator<KeyType, ValueType> end() {
+        return impl::LRUCacheIterator<KeyType, ValueType>();
+      }
+
+      impl::LRUCacheIterator<KeyType, ValueType> begin_bounded(int max_length) {
+        return impl::LRUCacheIterator<KeyType, ValueType>(key_cache.begin(), &value_cache, max_length);
       }
 
     private:

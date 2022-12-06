@@ -22,7 +22,7 @@ TEST(LRUCacheTest, SimpleStorageRecall) {
   ASSERT_EQ(output_var, 1);
 }
 
-TEST(LRUCacheTest, RefreshElment) {
+TEST(LRUCacheTest, RefreshElement) {
   LRUCache<int, int> cache(4);
   int output_var;
   CachePutResult result = cache.Put(1, 1, &output_var);
@@ -45,4 +45,30 @@ TEST(LRUCacheTest, RefreshElment) {
   bool fetch_success = cache.Fetch(1, &output_var);
   ASSERT_TRUE(fetch_success);
   ASSERT_EQ(output_var, 16);
+}
+
+TEST(LRUCacheTest, VerifyUnboundedIterator) {
+  LRUCache<int, int> cache(64);
+
+  for (int i = 0; i < 256; i++) {
+    cache.Put(i, i);
+  }
+
+  auto itr = cache.begin();
+  int i = 255;
+  while (itr != cache.end()) {
+    ASSERT_EQ(*itr, i--);
+    ++itr;
+  }
+
+  std::cout << (itr != cache.end()) << std::endl;
+
+  ASSERT_TRUE(itr == cache.end());
+
+  i = 255;
+  for (auto itr = cache.begin_bounded(32); itr != cache.end(); ++itr) {
+    ASSERT_EQ(*itr, i--);
+  }
+
+  ASSERT_EQ(i, 223);
 }

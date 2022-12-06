@@ -99,6 +99,33 @@ TEST(HashListTest, PushFirstElementOntoLast) {
   ASSERT_EQ(output, 1);
 }
 
+TEST(HashListTest, VerifyIterator) {
+  HashList<int> test;
+  for (int i = 0; i < 512; i++) {
+    test.PushBack(i);
+  }
+
+  int cur = 0;
+  for (auto itr = test.begin(); itr != test.end(); itr++) {
+    ASSERT_EQ(*itr, cur++);
+  }
+
+  ASSERT_EQ(cur, 512);
+
+  auto itr = test.begin();
+  for (int i = 0; i < 511; i++) {
+    ++itr;
+  }
+
+  cur = 511;
+  do {
+    ASSERT_EQ(*itr, cur--);
+    --itr;
+  } while (itr != test.begin());
+
+  ASSERT_EQ(cur, 0);
+}
+
 TEST(HashListTest, StressTest) {
   HashList<int> list;
 
@@ -106,7 +133,7 @@ TEST(HashListTest, StressTest) {
   // (2 << 26) - 1 -> something like 65 million push/pop pairs
   // about 4 seconds (with assertions)
   // 30 mil modifications per second (sufficient for this)
-  for (int size = 1; size < (1 << 25); size <<= 1) {
+  for (int size = 1; size < (1 << 18); size <<= 1) {
     for (int i = 0; i < size; i++) {
       list.PushFront(i);
     }
