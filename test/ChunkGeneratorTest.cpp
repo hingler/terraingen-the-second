@@ -49,7 +49,6 @@ TEST(ChunkGeneratorTest, SimpleChunkGen) {
     EXPECT_NEAR(vert.texcoord.x, vert.position.x * (1.0 / 128.0), 0.0001);
 
     EXPECT_NEAR(vert.texcoord.y, vert.position.z * (1.0 / 128.0), 0.0001);
-
     EXPECT_GT(vert.normal.y, 0.1);
   }
 
@@ -91,11 +90,13 @@ TEST(ChunkGeneratorTest, MultipleLod) {
   Vertex* vertex_buffer = new Vertex[33 * 33 * 7];
   unsigned int* index_buffer = new unsigned int[32 * 32 * 7 * 6];
 
-  ASSERT_EQ(generator.WriteVertexBuffer(vertex_buffer, 33 * 33 * 7 * 44), 33 * 33 * 7 * 44);
-  ASSERT_EQ(generator.WriteIndexBuffer(index_buffer, 32 * 32 * 6 * 7 * 4), 32 * 32 * 6 * 7 * 4);
+  ASSERT_EQ(generator.WriteVertexBuffer(vertex_buffer, 33 * 33 * 7 * sizeof(Vertex)), 33 * 33 * 7 * 44);
+  ASSERT_EQ(generator.WriteIndexBuffer(index_buffer, 32 * 32 * 6 * 7 * sizeof(unsigned int)), 32 * 32 * 6 * 7 * 4);
   for (int i = 0; i < 33 * 33 * 7; i++) {
     Vertex& vert = vertex_buffer[i];
     float height = sampler->Get(vert.position.x, vert.position.z);
+    // heights are probably off on edges
+    // could test later!!
     EXPECT_NEAR(vert.position.y, height, 0.01);
 
     EXPECT_NEAR(vert.texcoord.x, vert.position.x * (1.0 / 128.0), 0.005);

@@ -86,7 +86,7 @@ namespace terraingen {
           memcpy(ptr, (*itr)->vertex_data, chunk_size_bytes);
           n -= chunk_size_bytes;
           bytes_written += chunk_size_bytes;
-          ptr += bytes_written;
+          ptr += chunk_size_bytes;
         }
 
         return bytes_written;
@@ -108,7 +108,7 @@ namespace terraingen {
           memcpy(ptr, (*itr)->index_data, chunk_size_bytes);
           n -= chunk_size_bytes;
           bytes_written += chunk_size_bytes;
-          ptr += bytes_written;
+          ptr += chunk_size_bytes;
         }
 
         return bytes_written;
