@@ -9,9 +9,9 @@
 #include <algorithm>
 #include <memory>
 
+#include <glm/glm.hpp>
 #include <iostream>
 
-#include <glm/glm.hpp>
 
 namespace terraingen {
   namespace terrain {
@@ -45,8 +45,8 @@ namespace terraingen {
           tree_res(tree_resolution) {}
 
       Vertex CreateVertex(
-        size_t offset_x,
-        size_t offset_y,
+        long offset_x,
+        long offset_y,
         size_t step,
         const lod::lod_node* tree
       ) {
@@ -54,8 +54,6 @@ namespace terraingen {
         if (offset_x % chunk_size == 0 || offset_y % chunk_size == 0) {
           // have to poll chunk axis
           glm::vec2 axis_sample(offset_x, offset_y);
-          // sampling on an axis fucks up corner case
-          // just sample on diagonal and the logic should still apply
           axis_sample -= glm::vec2(0.5);
 
           size_t target_size = lod::lod_node::GetChunkSize(tree, tree_res, axis_sample);
@@ -65,7 +63,7 @@ namespace terraingen {
           target_size = lod::lod_node::GetChunkSize(tree, tree_res, axis_sample);
           effective_step = std::max(effective_step, target_size / chunk_res);
 
-          if (offset_x % effective_step != 0 || offset_y % effective_step != 0) {
+          if ((offset_x % effective_step) != 0 || (offset_y % effective_step) != 0) {
             // interpolate between nearest reference points
             return CreateVertex_edge(offset_x, offset_y, effective_step);
           } else {
@@ -74,6 +72,7 @@ namespace terraingen {
           }
         }
 
+        // default behavior
         return CreateVertex_internal(offset_x, offset_y, step);
       }
 
@@ -87,8 +86,8 @@ namespace terraingen {
        * @return Vertex - resultant vertex object.
        */
       Vertex CreateVertex_internal(
-        size_t offset_x,
-        size_t offset_y,
+        long offset_x,
+        long offset_y,
         size_t step
       ) {
         auto position = GetPosition(offset_x, offset_y);
@@ -107,8 +106,8 @@ namespace terraingen {
       }
 
       Vertex CreateVertex_edge(
-        size_t offset_x,
-        size_t offset_y,
+        long offset_x,
+        long offset_y,
         size_t effective_step
       ) {
         
@@ -160,7 +159,6 @@ namespace terraingen {
         float tri_br = right_step * bot_step;
 
         float quad_area = tri_tl + tri_tr + tri_bl + tri_br;
-        std::cout << "quad area: " << quad_area << std::endl;
 
         float left_bias = (tri_tl + tri_bl) / (2 * quad_area);
         float right_bias = (tri_tr + tri_br) / (2 * quad_area);
@@ -192,6 +190,7 @@ namespace terraingen {
           + bot_vert.tangent * bot_bias;
 
         res.tangent = glm::normalize(res.tangent);
+
         return res;
       }
 
@@ -203,7 +202,7 @@ namespace terraingen {
       size_t chunk_res;
       size_t tree_res;
 
-      glm::vec3 GetPosition(size_t offset_x, size_t offset_y) {
+      glm::vec3 GetPosition(long offset_x, long offset_y) {
         float sample = height_map->Get(offset_x, offset_y);
         glm::vec3 position(offset_x * scale, sample, offset_y * scale);
         position -= offset;

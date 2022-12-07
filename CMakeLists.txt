@@ -33,12 +33,14 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${GLM_INCLUDES})
 set(TEST_PATHS ${TEST_DIR}/LodTreeGeneratorTest.cpp
                ${TEST_DIR}/HashListTest.cpp
                ${TEST_DIR}/LRUCacheTest.cpp
-               ${TEST_DIR}/VertexGeneratorTest.cpp)
+               ${TEST_DIR}/VertexGeneratorTest.cpp
+               ${TEST_DIR}/ChunkGeneratorTest.cpp)
 
 set(TEST_NAMES LodTreeGeneratorTest
                HashListTest
                LRUCacheTest
-               VertexGeneratorTest)
+               VertexGeneratorTest
+               ChunkGeneratorTest)
 
 find_package(gtest REQUIRED)
 

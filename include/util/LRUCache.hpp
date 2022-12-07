@@ -67,8 +67,7 @@ namespace terraingen {
 
       // put, ignore result
       void Put(const KeyType& key, const ValueType& value) {
-        int _;
-        CachePutResult __ = Put(key, value, &_);
+        CachePutResult __ = Put(key, value, nullptr);
       }
 
       // output receives booted out value
@@ -77,7 +76,9 @@ namespace terraingen {
         key_cache.PushFront(key);
         auto itr = value_cache.find(key);
         if (itr != value_cache.end()) {
-          *output = itr->second;
+          if (output != nullptr) {
+            *output = itr->second;
+          }
           res = OVERWRITE;
         } else if (key_cache.Size() > capacity_) {
           KeyType key_last; 
@@ -87,7 +88,9 @@ namespace terraingen {
           bool key_available = key_cache.PopBack(&key_last);
           assert(key_available);
           assert(value_cache.find(key_last) != value_cache.end());
-          *output = value_cache.at(key_last);
+          if (output != nullptr) {
+            *output = value_cache.at(key_last);
+          }
           res = REMOVE_LAST;
         }
 
