@@ -1,5 +1,7 @@
 #include "lod/lod_node.hpp"
 
+#include <iostream>
+
 namespace terraingen {
   namespace lod {
     lod_node* lod_node::lod_node_alloc() {

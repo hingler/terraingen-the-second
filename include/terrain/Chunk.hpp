@@ -11,9 +11,7 @@
 
 // build a single chunk at a time
 namespace terraingen {
-  namespace terrain {
-    // chunks shouldn't take responsibility for their own construction (it doesn't make sense)
-    
+  namespace terrain {    
     struct Chunk {
       Vertex* vertex_data;
       unsigned int* index_data;
@@ -21,40 +19,51 @@ namespace terraingen {
       size_t vertex_count;
       size_t index_count;
 
+      /**
+       * @brief Creates a new chunk.
+       * 
+       * @tparam HeightMap - format for height map
+       * @param vert_generator - vertex generator.
+       * @param offset_x - x offset
+       * @param offset_y - y offset
+       * @param offset_index - integer offset for indices.
+       * @param step - step size for offset.
+       * @param chunk_res - number of quads along each axis
+       * @param lod - root of our LOD tree.
+       * @return std::shared_ptr<Chunk> - pointer to populated chunk.
+       */
       template <typename HeightMap>
       static std::shared_ptr<Chunk> chunk_create(
-        const VertexGenerator<HeightMap>& vert_generator,
-        size_t offset_x,
-        size_t offset_y,
+        VertexGenerator<HeightMap>& vert_generator,
+        long offset_x,
+        long offset_y,
         unsigned int offset_index,
-        size_t tree_res,
+        size_t step,
         size_t chunk_res,
-        const glm::vec3& terrain_offset,
         const lod::lod_node* lod) 
       {
-        size_t step = tree_res / chunk_res;
-        Vertex* vert_data = new Vertex[chunk_res * chunk_res];
-        unsigned int* ind_data = new unsigned int[(chunk_res - 1) * (chunk_res - 1) * 6];
+        Vertex* vert_data = new Vertex[(chunk_res + 1) * (chunk_res + 1)];
+        unsigned int* ind_data = new unsigned int[(chunk_res) * (chunk_res) * 6];
         for (int y = 0; y <= chunk_res; y++) {
           for (int x = 0; x <= chunk_res; x++) {
-            vert_data[x * chunk_res + y] = vert_generator->CreateVertex(x + offset_x, y + offset_y, chunk_res, step);
+            vert_data[x * (chunk_res + 1) + y] = vert_generator.CreateVertex(x * step + offset_x, y * step + offset_y, step, lod);
           }
         }
 
         size_t index_offset = 0;
         for (int y = 0; y < chunk_res; y++) {
           for (int x = 0; x < chunk_res; x++) {
-            unsigned int index_init = (y * chunk_res + x) + offset_index;
+            unsigned int index_init = (y * (chunk_res + 1) + x) + offset_index;
             ind_data[index_offset++] = index_init;
             ind_data[index_offset++] = index_init + 1;
-            ind_data[index_offset++] = index_init + chunk_res;
-            ind_data[index_offset++] = index_init + 1;
             ind_data[index_offset++] = index_init + chunk_res + 1;
-            ind_data[index_offset++] = index_init + chunk_res;
+            ind_data[index_offset++] = index_init + 1;
+            ind_data[index_offset++] = index_init + chunk_res + 2;
+            ind_data[index_offset++] = index_init + chunk_res + 1;
           }
         }
 
-        auto res = std::make_shared<Chunk>();
+        auto res = std::shared_ptr<Chunk>(new Chunk());
         res->vertex_data = vert_data;
         res->index_data = ind_data;
         res->vertex_count = (chunk_res + 1) * (chunk_res + 1);

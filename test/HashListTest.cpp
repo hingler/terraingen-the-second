@@ -5,6 +5,8 @@
 #include "terrain/Vertex.hpp"
 #include "terrain/VertexGenerator.hpp"
 
+#include "terrain/ChunkGenerator.hpp"
+
 #include <iostream>
 
 using namespace terraingen;
