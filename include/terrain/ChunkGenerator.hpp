@@ -128,8 +128,14 @@ namespace terraingen {
         // if children are null, draw
         if (node->tl == nullptr) {
           ChunkIdentifier identifier { offset_x, offset_y, chunk_size };
-          std::shared_ptr<Chunk> chunk = Chunk::chunk_create(vert_gen, offset_x, offset_y, index_offset, chunk_size / chunk_res_, chunk_res_, tree);
-          chunk_data_.Put(identifier, chunk);
+          std::shared_ptr<Chunk> chunk;
+          if (!chunk_data_.Has(identifier)) {
+            chunk = Chunk::chunk_create(vert_gen, offset_x, offset_y, index_offset, chunk_size / chunk_res_, chunk_res_, tree);
+            chunk_data_.Put(identifier, chunk);
+          } else {
+            chunk_data_.Fetch(identifier, &chunk);
+          }
+
           index_offset += chunk->vertex_count;
           return 1;
         } else {

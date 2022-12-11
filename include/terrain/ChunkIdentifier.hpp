@@ -24,8 +24,6 @@ namespace std {
       // this is fine for now i think
       return ((identifier.x << 24) | identifier.y) * identifier.size;
     }
-
-    // need equality check :3
   };
 }
 
