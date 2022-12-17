@@ -43,29 +43,14 @@ namespace terraingen {
         const lod::lod_node* lod) 
       {
         Vertex* vert_data = new Vertex[(chunk_res + 1) * (chunk_res + 1)];
-        unsigned int* ind_data = new unsigned int[(chunk_res) * (chunk_res) * 6];
         for (int y = 0; y <= chunk_res; y++) {
           for (int x = 0; x <= chunk_res; x++) {
             vert_data[x * (chunk_res + 1) + y] = vert_generator.CreateVertex(x * step + offset_x, y * step + offset_y, step, lod);
           }
         }
 
-        size_t index_offset = 0;
-        for (int y = 0; y < chunk_res; y++) {
-          for (int x = 0; x < chunk_res; x++) {
-            unsigned int index_init = (y * (chunk_res + 1) + x) + offset_index;
-            ind_data[index_offset++] = index_init;
-            ind_data[index_offset++] = index_init + 1;
-            ind_data[index_offset++] = index_init + chunk_res + 1;
-            ind_data[index_offset++] = index_init + 1;
-            ind_data[index_offset++] = index_init + chunk_res + 2;
-            ind_data[index_offset++] = index_init + chunk_res + 1;
-          }
-        }
-
         auto res = std::shared_ptr<Chunk>(new Chunk());
         res->vertex_data = vert_data;
-        res->index_data = ind_data;
         res->vertex_count = (chunk_res + 1) * (chunk_res + 1);
         res->index_count = chunk_res * chunk_res * 6;
 

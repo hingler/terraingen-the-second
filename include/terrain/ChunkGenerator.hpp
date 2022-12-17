@@ -93,23 +93,39 @@ namespace terraingen {
       }
 
       size_t WriteIndexBuffer(void* dst, size_t n) {
-        unsigned char* ptr = reinterpret_cast<unsigned char*>(dst);
+        unsigned int* ptr = reinterpret_cast<unsigned int*>(dst);
         if (chunk_count_ <= 0) {
           return 0;
         }
 
-        size_t chunk_size_bytes = chunk_res_ * chunk_res_ * 6 * sizeof(unsigned int);
+        size_t quad_size_bytes = 6 * sizeof(unsigned int);
         size_t bytes_written = 0;
-        for (auto itr = chunk_data_.begin_bounded(chunk_count_); itr != chunk_data_.end(); itr++) {
-          if (n < chunk_size_bytes) {
-            break;
+
+        const size_t chunk_verts = (chunk_res_ + 1);
+
+        size_t index_offset = 0;
+        size_t index_step = chunk_verts * chunk_verts;
+        for (int i = 0; i < chunk_count_; i++) {
+          for (int y = 0; y < chunk_res_; y++) {
+            for (int x = 0; x < chunk_res_; x++) {                        // ccw tris, bl -> tr
+              *(ptr++) = index_offset + (y       * chunk_verts) + x;      // bl
+              *(ptr++) = index_offset + (y       * chunk_verts) + x + 1;  // br
+              *(ptr++) = index_offset + ((y + 1) * chunk_verts) + x + 1;  // tr
+              *(ptr++) = index_offset + ((y + 1) * chunk_verts) + x + 1;  // tr
+              *(ptr++) = index_offset + ((y + 1) * chunk_verts) + x;      // tl
+              *(ptr++) = index_offset + (y       * chunk_verts) + x;      // bl
+
+              bytes_written += quad_size_bytes;
+              if (bytes_written > (n - quad_size_bytes)) {
+                return bytes_written;
+              }
+            }
           }
 
-          memcpy(ptr, (*itr)->index_data, chunk_size_bytes);
-          n -= chunk_size_bytes;
-          bytes_written += chunk_size_bytes;
-          ptr += chunk_size_bytes;
+          index_offset += index_step;
         }
+
+        
 
         return bytes_written;
       }
