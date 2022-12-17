@@ -11,6 +11,8 @@
 
 #include <memory>
 
+#include <glm/glm.hpp>
+
 namespace terraingen {
   namespace terrain {
     template <typename HeightMap>
@@ -90,6 +92,44 @@ namespace terraingen {
         }
 
         return bytes_written;
+      }
+
+      /**
+       * @brief Writes vertex buffer to separated attribute buffers
+       * 
+       * @param positions - position output
+       * @param normals - normal output
+       * @param texcoords - texcoord output
+       * @param tangents - tangent output
+       * @param vertices - max number of vertices we can write across our attribute buffers
+       * @return size_t - number of vertices written
+       */
+      size_t WriteVertexBufferSeparate(glm::vec3* positions, glm::vec3* normals, glm::vec2* texcoords, glm::vec3* tangents, const size_t vertices) {
+        if (chunk_count_ <= 0) {
+          return 0;
+        }
+
+        size_t n = vertices;
+
+        size_t chunk_size = (chunk_res_ + 1) * (chunk_res_ + 1);
+        Vertex* vertex_data;
+        for (auto itr = chunk_data_.begin_bounded(chunk_count_); itr != chunk_data_.end(); itr++) {
+          if (n < chunk_size) {
+            break;
+          }
+
+          vertex_data = (*itr)->vertex_data;
+          for (int i = 0; i < chunk_size; i++) {
+            *positions++ = vertex_data->position;
+            *normals++ = vertex_data->normal;
+            *texcoords++ = vertex_data->texcoord;
+            *tangents++ = vertex_data->tangent;
+
+            vertex_data++;
+          }
+
+          n -= chunk_size;
+        }
       }
 
       size_t WriteIndexBuffer(void* dst, size_t n) {
