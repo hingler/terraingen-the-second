@@ -52,7 +52,7 @@ namespace terraingen {
         auto res = std::shared_ptr<Chunk>(new Chunk());
         res->vertex_data = vert_data;
         res->vertex_count = (chunk_res + 1) * (chunk_res + 1);
-        res->index_count = chunk_res * chunk_res * 6;
+        res->index_count = 0;
 
         return res;
       }
