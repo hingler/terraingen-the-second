@@ -36,13 +36,14 @@ namespace terraingen {
           terrain_res,
           chunk_res
         ),
-        terrain_res_(terrain_res) {
+        terrain_res_(terrain_res),
+        offset_(terrain_offset) {
           tree_gen_.cascade_factor = cascade_factor;
         }
     
     void UpdateChunkData(const glm::vec3& local_position) {
       // update lod tree
-      lod::lod_node* tree = tree_gen_.CreateLodTree(local_position);
+      lod::lod_node* tree = tree_gen_.CreateLodTree(local_position + offset_);
       chunk_gen_.UpdateChunks(tree, terrain_res_);
       lod::lod_node::lod_node_free(tree);
     }
@@ -76,6 +77,7 @@ namespace terraingen {
     terrain::ChunkGenerator<HeightMap> chunk_gen_;
     lod::LodTreeGenerator<HeightMap> tree_gen_;
     size_t terrain_res_;
+    glm::vec3 offset_;
   };
 }
 
