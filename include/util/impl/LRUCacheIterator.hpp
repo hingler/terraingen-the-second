@@ -17,7 +17,7 @@ namespace terraingen {
         using pointer = ValueType*;
 
         // create hash list iterator
-        LRUCacheIterator(HashListIterator<KeyType> itr, std::unordered_map<KeyType, ValueType>* cache) : LRUCacheIterator(itr, cache, SIZE_T_MAX) {}
+        LRUCacheIterator(HashListIterator<KeyType> itr, std::unordered_map<KeyType, ValueType>* cache) : LRUCacheIterator(itr, cache, SIZE_MAX) {}
 
         LRUCacheIterator(HashListIterator<KeyType> itr, std::unordered_map<KeyType, ValueType>* cache, size_t length) : key_itr(itr), value_cache(cache), max_(length), ind(0) {}
 
@@ -40,7 +40,7 @@ namespace terraingen {
           ind = other.ind;
         }
 
-        LRUCacheIterator() : key_itr(), value_cache(nullptr), max_(0), ind(SIZE_T_MAX) {}
+        LRUCacheIterator() : key_itr(), value_cache(nullptr), max_(0), ind(SIZE_MAX) {}
 
         LRUCacheIterator<KeyType, ValueType>& operator++() {
           key_itr++;

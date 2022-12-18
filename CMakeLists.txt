@@ -44,17 +44,15 @@ set(TEST_NAMES LodTreeGeneratorTest
                ChunkGeneratorTest
                TerrainGeneratorTest)
 
-find_package(gtest REQUIRED)
+add_subdirectory(${LIB_DIR}/googletest)
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
-  foreach(test_path test_name IN ZIP_LISTS TEST_PATHS TEST_NAMES)
-    add_executable(${test_name} ${test_path})
-    target_link_libraries(${test_name} PRIVATE ${PROJECT_NAME} GTest::gtest_main)
-    target_include_directories(${test_name} PUBLIC ${INC_DIR}
-    )
-    add_test(NAME ${test_name} COMMAND ${test_name})
-  endforeach()
-endif()
+foreach(test_path test_name IN ZIP_LISTS TEST_PATHS TEST_NAMES)
+  add_executable(${test_name} ${test_path})
+  target_link_libraries(${test_name} PRIVATE ${PROJECT_NAME} GTest::gtest_main)
+  target_include_directories(${test_name} PUBLIC ${INC_DIR} ${GLM_INCLUDES}
+  )
+  add_test(NAME ${test_name} COMMAND ${test_name})
+endforeach()
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
