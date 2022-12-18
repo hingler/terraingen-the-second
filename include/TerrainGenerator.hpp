@@ -43,7 +43,7 @@ namespace terraingen {
     
     void UpdateChunkData(const glm::vec3& local_position) {
       // update lod tree
-      lod::lod_node* tree = tree_gen_.CreateLodTree(local_position + offset_);
+      lod::lod_node* tree = tree_gen_.CreateLodTree(local_position - offset_);
       chunk_gen_.UpdateChunks(tree, terrain_res_);
       lod::lod_node::lod_node_free(tree);
     }

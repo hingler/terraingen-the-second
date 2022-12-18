@@ -66,3 +66,29 @@ TEST(TerrainGeneratorTest, WanderingTest) {
 
   // this might be fine actually - could regenerate terrain on each frame (or delay, come up with alt solution)
 }
+
+TEST(TerrainGeneratorTest, RespectOffsetInTreeGen) {
+  std::shared_ptr<DummySampler> sampler = std::make_shared<DummySampler>();
+  TerrainGenerator generator(
+    sampler,
+    4.0f,
+    (1.0 / 2048.0),
+    glm::vec3(-1024.0, 0.0, -1024.0),
+    2048,
+    64,
+    256.0
+  );
+
+  generator.UpdateChunkData(glm::vec3(0));
+  size_t chunks = generator.GetChunkCount();
+
+  generator.UpdateChunkData(glm::vec3(1024, 0, 1024));
+  size_t chunks_border = generator.GetChunkCount();
+
+  // symmetrical about center
+  generator.UpdateChunkData(glm::vec3(-1024, 0, -1024));
+  size_t chunks_opposite_border = generator.GetChunkCount();
+
+  ASSERT_EQ(chunks_border, chunks_opposite_border);
+  ASSERT_GT(chunks, chunks_border);
+}
