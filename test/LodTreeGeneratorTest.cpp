@@ -32,7 +32,7 @@ TEST(LodTreeGeneratorTest, EnsureConsistency) {
   std::shared_ptr<HeightMapTest> test = std::make_shared<HeightMapTest>();
   LodTreeGenerator<HeightMapTest> generator(test, 256, 16);
   generator.cascade_factor = 16.0f;
-  glm::vec3 local_point(40.0, 40.0, 2.5);
+  glm::vec3 local_point(40.0, 2.5, 40.0);
 
   lod_node* node = generator.CreateLodTree(local_point);
   lod_node_recurse_verify(node);
@@ -43,7 +43,7 @@ TEST(LodTreeGeneratorTest, VerifyMinChunkSizeAtLocalPoint) {
   std::shared_ptr<HeightMapTest> test = std::make_shared<HeightMapTest>();
   LodTreeGenerator<HeightMapTest> generator(test, 256, 16);
   generator.cascade_factor = 32.0f;
-  glm::vec3 local_point(40.0, 40.0, 2.5);
+  glm::vec3 local_point(40.0, 2.5, 40.0);
 
   lod_node* node = generator.CreateLodTree(local_point);
 
