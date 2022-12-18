@@ -1,6 +1,8 @@
 #ifndef LOD_TREE_GENERATOR_H_
 #define LOD_TREE_GENERATOR_H_
 
+#define CASCADE_MUL_FACTOR 4
+
 #include "lod/lod_node.hpp"
 
 #include <glm/glm.hpp>
@@ -50,10 +52,10 @@ namespace terraingen {
     template <typename HeightMap>
     lod_node* LodTreeGenerator<HeightMap>::CreateLodTree(const glm::vec3& local_position) {
       auto* node = lod_node::lod_node_alloc();
-      int size = size_ >> 1;
-      double cascade_real = cascade_factor;
+      int size = size_;
+      double cascade_real = cascade_factor / CASCADE_MUL_FACTOR;
       while (size > chunk_res_) {
-        cascade_real *= 2;
+        cascade_real *= CASCADE_MUL_FACTOR;
         size >>= 1;
       }
 
@@ -89,11 +91,12 @@ namespace terraingen {
       float y_f = static_cast<float>(y);
 
       // side note: we need to map z to height :(
-      if (local_position.x < x || local_position.x > x + node_size || local_position.y < y || local_position.y > y + node_size) {
-        glm::vec3 closest_point(glm::clamp(local_position.x, x_f, x_f + node_size), glm::clamp(local_position.y, y_f, y_f + node_size), 0.0f);
+      if (local_position.x < x || local_position.x > x + node_size || local_position.z < y || local_position.z > y + node_size) {
+        glm::vec3 closest_point(glm::clamp(local_position.x, x_f, x_f + node_size), local_position.y, glm::clamp(local_position.z, y_f, y_f + node_size));
         dist_to_chunk = glm::length(closest_point - local_position);
       } else {
-        dist_to_chunk = local_position.z;
+        // ignore z
+        dist_to_chunk = 0.0;
       }
 
       if (dist_to_chunk > cascade_threshold) {
@@ -105,7 +108,7 @@ namespace terraingen {
       root->tl = lod_node::lod_node_alloc();
       root->tr = lod_node::lod_node_alloc();
 
-      double new_cascade_threshold = cascade_threshold / 2;
+      double new_cascade_threshold = cascade_threshold / CASCADE_MUL_FACTOR;
       int new_node_size = node_size / 2;
 
       CreateLodTree_recurse(x,                 y,                 new_node_size, new_cascade_threshold, local_position, root->bl);

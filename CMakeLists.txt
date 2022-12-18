@@ -34,13 +34,15 @@ set(TEST_PATHS ${TEST_DIR}/LodTreeGeneratorTest.cpp
                ${TEST_DIR}/HashListTest.cpp
                ${TEST_DIR}/LRUCacheTest.cpp
                ${TEST_DIR}/VertexGeneratorTest.cpp
-               ${TEST_DIR}/ChunkGeneratorTest.cpp)
+               ${TEST_DIR}/ChunkGeneratorTest.cpp
+               ${TEST_DIR}/TerrainGeneratorTest.cpp)
 
 set(TEST_NAMES LodTreeGeneratorTest
                HashListTest
                LRUCacheTest
                VertexGeneratorTest
-               ChunkGeneratorTest)
+               ChunkGeneratorTest
+               TerrainGeneratorTest)
 
 find_package(gtest REQUIRED)
 
