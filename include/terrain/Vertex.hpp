@@ -9,7 +9,7 @@ namespace terraingen {
       glm::vec3 position;
       glm::vec3 normal;
       glm::vec2 texcoord;
-      glm::vec3 tangent;
+      glm::vec4 tangent;
     } __attribute__((aligned(4)));
   }
 }

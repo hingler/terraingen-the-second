@@ -102,7 +102,7 @@ namespace terraingen {
 
         auto texcoord = glm::vec2(offset_x * scale_tex, offset_y * scale_tex);
 
-        return { position, normal, texcoord, tangent };
+        return { position, normal, texcoord, glm::vec4(tangent, 1.0) };
       }
 
       Vertex CreateVertex_edge(
@@ -131,6 +131,7 @@ namespace terraingen {
         res.normal = vert_floor.normal * (1.0f - mix) + vert_ceil.normal * mix;
         res.texcoord = vert_floor.texcoord * (1.0f - mix) + vert_ceil.texcoord * mix;
         res.tangent = vert_floor.tangent * (1.0f - mix) + vert_ceil.tangent * mix;
+        res.tangent.w = 1.0;
 
         return res;
       }
@@ -189,7 +190,11 @@ namespace terraingen {
           + top_vert.tangent * top_bias
           + bot_vert.tangent * bot_bias;
 
+        // ensure normalization works right
+        res.tangent.w = 0.0;
         res.tangent = glm::normalize(res.tangent);
+
+        res.tangent.w = 1.0;
 
         return res;
       }
