@@ -17,7 +17,7 @@ namespace terraingen {
   namespace terrain {
     template <typename HeightMap>
     class ChunkGenerator {
-      static_assert(sizeof(Vertex) == 44);
+      static_assert(sizeof(Vertex) == 48);
       static_assert(traits::height_map<HeightMap>::value);
     public:
       ChunkGenerator(
@@ -104,12 +104,13 @@ namespace terraingen {
        * @param vertices - max number of vertices we can write across our attribute buffers
        * @return size_t - number of vertices written
        */
-      size_t WriteVertexBufferSeparate(glm::vec3* positions, glm::vec3* normals, glm::vec2* texcoords, glm::vec3* tangents, const size_t vertices) {
+      size_t WriteVertexBufferSeparate(glm::vec3* positions, glm::vec3* normals, glm::vec2* texcoords, glm::vec4* tangents, const size_t vertices) {
         if (chunk_count_ <= 0) {
           return 0;
         }
 
         size_t n = vertices;
+        size_t vertices_drawn = 0;
 
         size_t chunk_size = (chunk_res_ + 1) * (chunk_res_ + 1);
         Vertex* vertex_data;
@@ -126,10 +127,13 @@ namespace terraingen {
             *tangents++ = vertex_data->tangent;
 
             vertex_data++;
+            vertices_drawn++;
           }
 
           n -= chunk_size;
         }
+
+        return vertices_drawn;
       }
 
       size_t WriteIndexBuffer(void* dst, size_t n) {

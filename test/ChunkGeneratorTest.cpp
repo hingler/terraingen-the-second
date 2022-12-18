@@ -38,7 +38,7 @@ TEST(ChunkGeneratorTest, SimpleChunkGen) {
   Vertex* vertex_buffer = new Vertex[33 * 33 * 4];
   unsigned int* index_buffer = new unsigned int[32 * 32 * 4 * 6];
 
-  ASSERT_EQ(generator.WriteVertexBuffer(vertex_buffer, 33 * 33 * 4 * 44), 33 * 33 * 4 * 44);
+  ASSERT_EQ(generator.WriteVertexBuffer(vertex_buffer, 33 * 33 * 4 * 48), 33 * 33 * 4 * 48);
   ASSERT_EQ(generator.WriteIndexBuffer(index_buffer, 32 * 32 * 6 * 4 * 4), 32 * 32 * 6 * 4 * 4);
 
   for (int i = 0; i < 33 * 3 * 4; i++) {
@@ -90,8 +90,15 @@ TEST(ChunkGeneratorTest, MultipleLod) {
   Vertex* vertex_buffer = new Vertex[33 * 33 * 7];
   unsigned int* index_buffer = new unsigned int[32 * 32 * 7 * 6];
 
-  ASSERT_EQ(generator.WriteVertexBuffer(vertex_buffer, 33 * 33 * 7 * sizeof(Vertex)), 33 * 33 * 7 * 44);
+  ASSERT_EQ(generator.WriteVertexBuffer(vertex_buffer, 33 * 33 * 7 * sizeof(Vertex)), 33 * 33 * 7 * 48);
   ASSERT_EQ(generator.WriteIndexBuffer(index_buffer, 32 * 32 * 6 * 7 * sizeof(unsigned int)), 32 * 32 * 6 * 7 * 4);
+
+  glm::vec3* positions = new glm::vec3[33 * 33 * 7];
+  glm::vec3* normals = new glm::vec3[33 * 33 * 7];
+  glm::vec4* tangents = new glm::vec4[33 * 33 * 7];
+  glm::vec2* texcoords = new glm::vec2[33 * 33 * 7];
+
+  ASSERT_EQ(generator.WriteVertexBufferSeparate(positions, normals, texcoords, tangents, 99999), 33 * 33 * 7);
   for (int i = 0; i < 33 * 33 * 7; i++) {
     Vertex& vert = vertex_buffer[i];
     float height = sampler->Get(vert.position.x, vert.position.z);
@@ -104,6 +111,11 @@ TEST(ChunkGeneratorTest, MultipleLod) {
     EXPECT_NEAR(vert.texcoord.y, vert.position.z * (1.0 / 128.0), 0.005);
 
     EXPECT_GT(vert.normal.y, 0.1);
+
+    EXPECT_NEAR(glm::length(vert.position - positions[i]), 0.0, 0.0001);
+    EXPECT_NEAR(glm::length(vert.normal - normals[i]), 0.0, 0.0001);
+    EXPECT_NEAR(glm::length(vert.tangent - tangents[i]), 0.0, 0.0001);
+    EXPECT_NEAR(glm::length(vert.texcoord - texcoords[i]), 0.0, 0.0001);
   }
 
   for (int i = 0; i < 32 * 32 * 6 * 7; i++) {
@@ -113,4 +125,9 @@ TEST(ChunkGeneratorTest, MultipleLod) {
 
   delete[] vertex_buffer;
   delete[] index_buffer;
+
+  delete[] positions;
+  delete[] normals;
+  delete[] tangents;
+  delete[] texcoords;
 }

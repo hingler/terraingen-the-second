@@ -63,7 +63,7 @@ namespace terraingen {
       return chunk_gen_.WriteVertexBuffer(dst, n);
     }
 
-    size_t WriteVertexBufferSeparate(glm::vec3* positions, glm::vec3* normals, glm::vec2* texcoords, glm::vec3* tangents, const size_t vertices) {
+    size_t WriteVertexBufferSeparate(glm::vec3* positions, glm::vec3* normals, glm::vec2* texcoords, glm::vec4* tangents, const size_t vertices) {
       return chunk_gen_.WriteVertexBufferSeparate(positions, normals, texcoords, tangents, vertices);
     }
 
